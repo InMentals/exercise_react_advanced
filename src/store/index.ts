@@ -1,7 +1,9 @@
-import { createStore } from "redux";
-import { reducer } from "./reducer";
+import { combineReducers, createStore } from "redux";
+import * as reducers from "./reducer";
+
+const rootReducer = combineReducers(reducers);
 
 export default function configureStore() {
-  const store = createStore(reducer);
+  const store = createStore(rootReducer);
   return store;
 }
