@@ -7,8 +7,7 @@ import AuthProvider from "./pages/auth/auth-provider.tsx";
 import { BrowserRouter } from "react-router";
 import configureStore from "./store";
 
-const store = configureStore();
-console.log({ store });
+const store = configureStore({ auth: !!localStorage });
 console.log(store.getState());
 
 const accessToken = storage.get("auth");
