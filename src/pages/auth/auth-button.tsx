@@ -1,13 +1,15 @@
 import Button from "../../components/ui/button";
-import { useAuth } from "./context";
+import { authLogout } from "../../store/actions";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { logout } from "./service";
 import { Link } from "react-router";
 
 function AuthButton() {
-  const { isLogged, onLogout } = useAuth();
+  const isLogged = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const handleLogoutClick = async () => {
     await logout();
-    onLogout();
+    dispatch(authLogout());
   };
 
   return isLogged ? (
