@@ -1,9 +1,8 @@
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useAppSelector } from "../../store";
-import { getIsLogged } from "../../store/selectors";
+import { useAuth } from "../../store/hooks";
 
 function RequireAuth() {
-  const isLogged = useAppSelector(getIsLogged);
+  const isLogged = useAuth();
   const location = useLocation();
   if (!isLogged) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;

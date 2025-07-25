@@ -1,8 +1,7 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import Button from "../../components/ui/button";
 import { login } from "./service";
-import { authLogin } from "../../store/actions";
-import { useAppDispatch } from "../../store";
+import { useLoginAction } from "../../store/hooks";
 import FormField from "../../components/ui/form-field";
 import { useNavigate, useLocation } from "react-router";
 import { AxiosError } from "axios";
@@ -12,7 +11,7 @@ import Page from "../../components/layout/page";
 function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const loginAction = useLoginAction();
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -40,7 +39,7 @@ function LoginPage() {
     try {
       setIsFetching(true);
       await login(credentials, rememberMe);
-      dispatch(authLogin());
+      loginAction();
       const to = location.state?.from ?? "/";
       navigate(to, { replace: true });
     } catch (error) {
