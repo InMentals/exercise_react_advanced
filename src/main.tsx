@@ -11,7 +11,7 @@ const accessToken = storage.get("auth");
 if (accessToken) {
   setAuthorizationHeader(accessToken);
 }
-const store = configureStore({ auth: !!localStorage });
+const store = configureStore({ auth: !!accessToken });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
