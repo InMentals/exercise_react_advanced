@@ -7,16 +7,20 @@ import FilterForm from "./filter-form";
 import Page from "../../components/layout/page";
 import "./adverts-page.css";
 import LinkButton from "../../components/ui/link-button";
+import { getAdverts } from "../../store/selectors";
+import { advertsLoaded } from "../../store/actions";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 function AdvertsPage() {
-  const [adverts, setAdverts] = useState<Advert[]>([]);
+  const dispatch = useAppDispatch();
+  const adverts = useAppSelector(getAdverts);
   const [filter, setFilter] = useState({ name: "", sale: "all" });
   const [filteredAdverts, setFilteredAdverts] = useState<Advert[]>([]);
 
   useEffect(() => {
     async function getAdverts() {
       const adverts = await getLatestAdverts();
-      setAdverts(adverts);
+      dispatch(advertsLoaded(adverts));
       setFilteredAdverts(adverts);
     }
     getAdverts();

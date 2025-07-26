@@ -19,3 +19,5 @@ export function useLogoutAction() {
     return dispatch(authLogout());
   };
 }
+
+//TODO: same but with adverts

@@ -9,6 +9,8 @@ import type { PreAdvert } from "./types";
 import RadioSelection from "../../components/ui/radio-selection";
 import CheckBoxSelection from "../../components/ui/checkbox-selection";
 import "./new-advert-page.css";
+import { useAppDispatch } from "../../store";
+import { advertsCreated } from "../../store/actions";
 
 function NewAdvertPage() {
   const [advertInfo, setAdvertInfo] = useState({
@@ -33,6 +35,7 @@ function NewAdvertPage() {
   const isDisabled = !name || !price || tags.length === 0 || submited;
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.type === "file") {
@@ -70,6 +73,7 @@ function NewAdvertPage() {
 
     try {
       const createdAdvert = await createAdvert(preAdvert);
+      dispatch(advertsCreated(createdAdvert));
       navigate(`/adverts/${createdAdvert.id}`);
     } catch (error) {
       console.log(error);
