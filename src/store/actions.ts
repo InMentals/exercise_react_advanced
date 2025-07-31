@@ -1,7 +1,19 @@
+import type { AppThunk } from ".";
+import { login } from "../pages/auth/service";
+import type { Credentials } from "../pages/auth/types";
 import type { Advert } from "../pages/adverts/types";
 
-type AuthLogin = {
-  type: "auth/login";
+type AuthLoginPending = {
+  type: "auth/login/pending";
+};
+
+type AuthLoginFulfilled = {
+  type: "auth/login/fulfilled";
+};
+
+type AuthLoginRejected = {
+  type: "auth/login/rejected";
+  payload: Error;
 };
 
 type AuthLogout = {
@@ -18,9 +30,41 @@ type AdvertsCreated = {
   payload: Advert;
 };
 
-export const authLogin = (): AuthLogin => ({
-  type: "auth/login",
+type UiResetError = {
+  type: "ui/reset-error";
+};
+
+export const authLoginPending = (): AuthLoginPending => ({
+  type: "auth/login/pending",
 });
+
+export const authLoginFulfilled = (): AuthLoginFulfilled => ({
+  type: "auth/login/fulfilled",
+});
+
+export const authLoginRejected = (error: Error): AuthLoginRejected => ({
+  type: "auth/login/rejected",
+  payload: error,
+});
+
+export function authLogin(
+  credentials: Credentials,
+  rememberMe: boolean,
+): AppThunk<Promise<void>> {
+  return async function (dispatch) {
+    dispatch(authLoginPending());
+    try {
+      await login(credentials, rememberMe);
+      dispatch(authLoginFulfilled());
+    } catch (error) {
+      if (error instanceof Error) {
+        error.message = "Unauthorized";
+        dispatch(authLoginRejected(error));
+      }
+      throw error;
+    }
+  };
+}
 
 export const authLogout = (): AuthLogout => ({
   type: "auth/logout",
@@ -36,4 +80,15 @@ export const advertsCreated = (advert: Advert): AdvertsCreated => ({
   payload: advert,
 });
 
-export type Actions = AuthLogin | AuthLogout | AdvertsLoaded | AdvertsCreated;
+export const uiResetError = (): UiResetError => ({
+  type: "ui/reset-error",
+});
+
+export type Actions =
+  | AuthLoginPending
+  | AuthLoginFulfilled
+  | AuthLoginRejected
+  | AuthLogout
+  | AdvertsLoaded
+  | AdvertsCreated
+  | UiResetError;

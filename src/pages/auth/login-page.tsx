@@ -1,10 +1,10 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import Button from "../../components/ui/button";
-import { login } from "./service";
-import { useLoginAction } from "../../store/hooks";
+import { useLoginAction, useUiResetError } from "../../store/hooks";
+import { useAppSelector } from "../../store";
+import { getUi } from "../../store/selectors";
 import FormField from "../../components/ui/form-field";
 import { useNavigate, useLocation } from "react-router";
-import { AxiosError } from "axios";
 import "./login-page.css";
 import Page from "../../components/layout/page";
 
@@ -12,13 +12,13 @@ function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const loginAction = useLoginAction();
+  const uiResetErrorAction = useUiResetError();
+  const { pending: isFetching, error } = useAppSelector(getUi);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
   const [rememberMe, setRememberMe] = useState(true);
-  const [error, setError] = useState<{ message: string } | null>(null);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
   const { email, password } = credentials;
   const isDisabled = !email || !password || isFetching;
 
@@ -37,20 +37,11 @@ function LoginPage() {
     event.preventDefault();
 
     try {
-      setIsFetching(true);
-      await login(credentials, rememberMe);
-      loginAction();
+      await loginAction(credentials, rememberMe);
       const to = location.state?.from ?? "/";
       navigate(to, { replace: true });
     } catch (error) {
-      if (error instanceof AxiosError) {
-        setError({
-          message: error.response?.data?.message ?? error.message ?? "",
-        });
-        navigate("not-found");
-      }
-    } finally {
-      setIsFetching(false);
+      console.log(error);
     }
   }
 
@@ -96,7 +87,7 @@ function LoginPage() {
               className="login-error"
               role="alert"
               onClick={() => {
-                setError(null);
+                uiResetErrorAction();
                 setCredentials({ email: "", password: "" });
               }}
             >

@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from ".";
-import { authLogin, authLogout } from "./actions";
+import type { Credentials } from "../pages/auth/types";
+import { authLogin, authLogout, uiResetError } from "./actions";
 import { getIsLogged } from "./selectors";
 
 export function useAuth() {
@@ -8,8 +9,8 @@ export function useAuth() {
 
 export function useLoginAction() {
   const dispatch = useAppDispatch();
-  return function () {
-    return dispatch(authLogin());
+  return function (credentials: Credentials, rememberMe: boolean) {
+    return dispatch(authLogin(credentials, rememberMe));
   };
 }
 
@@ -17,6 +18,13 @@ export function useLogoutAction() {
   const dispatch = useAppDispatch();
   return function () {
     return dispatch(authLogout());
+  };
+}
+
+export function useUiResetError() {
+  const dispatch = useAppDispatch();
+  return function () {
+    return dispatch(uiResetError());
   };
 }
 

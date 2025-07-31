@@ -4,11 +4,19 @@ import type { Actions } from "./actions";
 export type State = {
   auth: boolean;
   adverts: Advert[];
+  ui: {
+    pending: boolean;
+    error: Error | null;
+  };
 };
 
 const defaultState: State = {
   auth: false,
   adverts: [],
+  ui: {
+    pending: false,
+    error: null,
+  },
 };
 
 export function auth(
@@ -16,7 +24,7 @@ export function auth(
   action: Actions,
 ): State["auth"] {
   switch (action.type) {
-    case "auth/login":
+    case "auth/login/fulfilled":
       return true;
     case "auth/logout":
       return false;
@@ -34,6 +42,21 @@ export function adverts(
       return action.payload;
     case "adverts/created":
       return [...state, action.payload];
+    default:
+      return state;
+  }
+}
+
+export function ui(state = defaultState.ui, action: Actions): State["ui"] {
+  switch (action.type) {
+    case "auth/login/pending":
+      return { pending: true, error: null };
+    case "auth/login/fulfilled":
+      return { pending: false, error: null };
+    case "auth/login/rejected":
+      return { pending: false, error: action.payload };
+    case "ui/reset-error":
+      return { ...state, error: null };
     default:
       return state;
   }
