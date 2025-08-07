@@ -1,5 +1,5 @@
 import { getLatestAdverts } from "./service";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import type { Advert } from "./types";
 import AdvertItem from "./advert-item";
 import { Link } from "react-router";
@@ -14,7 +14,6 @@ import { useAppDispatch, useAppSelector } from "../../store";
 function AdvertsPage() {
   const dispatch = useAppDispatch();
   const adverts = useAppSelector(getAdverts);
-  const [filter, setFilter] = useState({ name: "", sale: "all" });
   const [filteredAdverts, setFilteredAdverts] = useState<Advert[]>([]);
 
   useEffect(() => {
@@ -26,43 +25,30 @@ function AdvertsPage() {
     getAdverts();
   }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const name = (data.get("name") as string).trim().toLowerCase();
+    const sale = data.get("sale") as string;
+
     let applyFilter = adverts.filter((ad) =>
-      ad.name.toLocaleLowerCase().includes(filter.name.toLocaleLowerCase()),
+      ad.name.toLowerCase().includes(name),
     );
-    if (filter.sale === "sell")
-      applyFilter = applyFilter.filter((ad) => ad.sale);
-    if (filter.sale === "buy")
-      applyFilter = applyFilter.filter((ad) => !ad.sale);
+    if (sale === "sell") applyFilter = applyFilter.filter((ad) => ad.sale);
+    if (sale === "buy") applyFilter = applyFilter.filter((ad) => !ad.sale);
 
     setFilteredAdverts(applyFilter);
   }
 
-  function handleReset(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleReset() {
     setFilteredAdverts(adverts);
-    setFilter({ name: "", sale: "all" });
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      [event.target.name]: event.target.value,
-    }));
   }
 
   return (
     <Page page="adverts">
       <div>
-        <FilterForm
-          name={filter.name}
-          selectedSaleValue={filter.sale}
-          onSubmit={handleSubmit}
-          onReset={handleReset}
-          onFilterChange={handleChange}
-        />
-
+        <FilterForm onSubmit={handleSubmit} onReset={handleReset} />
         {adverts.length ? (
           <ul className="adverts-container">
             {filteredAdverts.map((advert) => (

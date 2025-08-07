@@ -1,38 +1,36 @@
-import type { ComponentProps } from "react";
-import FormField from "../../components/ui/form-field";
-import RadioSelection from "../../components/ui/radio-selection";
+import type { FormEventHandler } from "react";
+
 import "./filter-form.css";
 
-interface FilterFormProps extends ComponentProps<"form"> {
-  name: string;
-  selectedSaleValue: string;
-  onFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+interface FilterFormProps {
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  onReset: FormEventHandler<HTMLFormElement>;
 }
 
-const FilterForm = ({
-  name,
-  selectedSaleValue,
-  onFilterChange,
-  ...props
-}: FilterFormProps) => {
+const FilterForm = ({ onSubmit, onReset }: FilterFormProps) => {
   return (
     <div className="filter-form-container">
-      <form {...props}>
+      <form onSubmit={onSubmit} onReset={onReset}>
         <fieldset>
           <legend>Filter</legend>
-          <FormField
-            type="text"
-            label="Advert name"
-            value={name}
-            name="name"
-            onChange={onFilterChange}
-          />
-          <RadioSelection
-            options={["all", "sell", "buy"]}
-            name={"sale"}
-            selectedValue={selectedSaleValue}
-            onChange={onFilterChange}
-          />
+          <label>
+            Advert name
+            <input type="text" name="name" />
+          </label>
+          <div>
+            <label>
+              <input type="radio" name="sale" value="all" defaultChecked />
+              All
+            </label>
+            <label>
+              <input type="radio" name="sale" value="sell" />
+              Sell
+            </label>
+            <label>
+              <input type="radio" name="sale" value="buy" />
+              Buy
+            </label>
+          </div>
           <div>
             <button type="submit">Apply filter</button>
             <button type="reset">Clear filter</button>

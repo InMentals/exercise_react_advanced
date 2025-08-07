@@ -27,7 +27,9 @@ const AdvertItem = ({ advert, detail }: AdvertItemProps) => {
       )}
       <ul aria-label="Tags" className="tags-container">
         {tags.map((tag) => (
-          <li className="tag">{tag}</li>
+          <li key={tag} className="tag">
+            {tag}
+          </li>
         ))}
       </ul>
       {detail && (
