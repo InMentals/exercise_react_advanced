@@ -1,4 +1,3 @@
-import { getLatestAdverts } from "./service";
 import { useEffect, useState } from "react";
 import type { Advert } from "./types";
 import AdvertItem from "./advert-item";
@@ -14,16 +13,14 @@ import { useAppDispatch, useAppSelector } from "../../store";
 function AdvertsPage() {
   const dispatch = useAppDispatch();
   const adverts = useAppSelector(getAdverts);
-  const [filteredAdverts, setFilteredAdverts] = useState<Advert[]>([]);
+  const [filter, setFilter] = useState({
+    name: "",
+    sale: "all",
+  });
 
   useEffect(() => {
-    async function getAdverts() {
-      const adverts = await getLatestAdverts();
-      dispatch(advertsLoaded(adverts));
-      setFilteredAdverts(adverts);
-    }
-    getAdverts();
-  }, []);
+    dispatch(advertsLoaded());
+  }, [dispatch]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,18 +28,37 @@ function AdvertsPage() {
     const data = new FormData(form);
     const name = (data.get("name") as string).trim().toLowerCase();
     const sale = data.get("sale") as string;
-
-    let applyFilter = adverts.filter((ad) =>
-      ad.name.toLowerCase().includes(name),
-    );
-    if (sale === "sell") applyFilter = applyFilter.filter((ad) => ad.sale);
-    if (sale === "buy") applyFilter = applyFilter.filter((ad) => !ad.sale);
-
-    setFilteredAdverts(applyFilter);
+    setFilter({ name, sale });
   }
 
   function handleReset() {
-    setFilteredAdverts(adverts);
+    setFilter({ name: "", sale: "all" });
+  }
+
+  function filterAdverts(adverts: Advert[]) {
+    let filteredAdverts: Advert[];
+    if (filter.name != "") {
+      filteredAdverts = adverts.filter((ad) =>
+        ad.name.toLowerCase().includes(filter.name),
+      );
+      if (filter.sale === "sell")
+        filteredAdverts = filteredAdverts.filter((ad) => ad.sale);
+      if (filter.sale === "buy")
+        filteredAdverts = filteredAdverts.filter((ad) => !ad.sale);
+      return filteredAdverts;
+    } else {
+      switch (filter.sale) {
+        case "sell":
+          filteredAdverts = adverts.filter((ad) => ad.sale);
+          break;
+        case "buy":
+          filteredAdverts = adverts.filter((ad) => !ad.sale);
+          break;
+        default:
+          return adverts;
+      }
+      return filteredAdverts;
+    }
   }
 
   return (
@@ -51,7 +67,7 @@ function AdvertsPage() {
         <FilterForm onSubmit={handleSubmit} onReset={handleReset} />
         {adverts.length ? (
           <ul className="adverts-container">
-            {filteredAdverts.map((advert) => (
+            {filterAdverts(adverts).map((advert: Advert) => (
               <li key={advert.id}>
                 <Link to={`/adverts/${advert.id}`} className="advert-container">
                   <AdvertItem advert={advert} detail={false} />

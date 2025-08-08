@@ -2,6 +2,7 @@ import type { AppThunk } from ".";
 import { login } from "../pages/auth/service";
 import type { Credentials } from "../pages/auth/types";
 import type { Advert } from "../pages/adverts/types";
+import { getLatestAdverts } from "../pages/adverts/service";
 
 type AuthLoginPending = {
   type: "auth/login/pending";
@@ -20,8 +21,8 @@ type AuthLogout = {
   type: "auth/logout";
 };
 
-type AdvertsLoaded = {
-  type: "adverts/loaded";
+type AdvertsLoadedFulfilled = {
+  type: "adverts/loaded/fulfilled";
   payload: Advert[];
 };
 
@@ -70,8 +71,10 @@ export const authLogout = (): AuthLogout => ({
   type: "auth/logout",
 });
 
-export const advertsLoaded = (adverts: Advert[]): AdvertsLoaded => ({
-  type: "adverts/loaded",
+export const advertsLoadedFulfilled = (
+  adverts: Advert[],
+): AdvertsLoadedFulfilled => ({
+  type: "adverts/loaded/fulfilled",
   payload: adverts,
 });
 
@@ -79,6 +82,23 @@ export const advertsCreated = (advert: Advert): AdvertsCreated => ({
   type: "adverts/created",
   payload: advert,
 });
+
+export function advertsLoaded(): AppThunk<Promise<void>> {
+  return async function (dispatch, getState) {
+    const state = getState();
+    if (state.adverts) {
+      return;
+    }
+    try {
+      //TODO: Manage advertsLoadedPending
+      const adverts = await getLatestAdverts();
+      dispatch(advertsLoadedFulfilled(adverts));
+    } catch (error) {
+      console.log(error);
+      //TODO: Manage advertsLoadedRejected
+    }
+  };
+}
 
 export const uiResetError = (): UiResetError => ({
   type: "ui/reset-error",
@@ -89,6 +109,6 @@ export type Actions =
   | AuthLoginFulfilled
   | AuthLoginRejected
   | AuthLogout
-  | AdvertsLoaded
+  | AdvertsLoadedFulfilled
   | AdvertsCreated
   | UiResetError;

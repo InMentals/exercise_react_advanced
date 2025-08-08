@@ -3,7 +3,7 @@ import type { Actions } from "./actions";
 
 export type State = {
   auth: boolean;
-  adverts: Advert[];
+  adverts: Advert[] | null;
   ui: {
     pending: boolean;
     error: Error | null;
@@ -12,7 +12,7 @@ export type State = {
 
 const defaultState: State = {
   auth: false,
-  adverts: [],
+  adverts: null,
   ui: {
     pending: false,
     error: null,
@@ -38,10 +38,10 @@ export function adverts(
   action: Actions,
 ): State["adverts"] {
   switch (action.type) {
-    case "adverts/loaded":
+    case "adverts/loaded/fulfilled":
       return action.payload;
     case "adverts/created":
-      return [...state, action.payload];
+      return [...(state ?? []), action.payload];
     default:
       return state;
   }
