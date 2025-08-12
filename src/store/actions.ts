@@ -1,8 +1,12 @@
 import type { AppThunk } from ".";
 import { login } from "../pages/auth/service";
 import type { Credentials } from "../pages/auth/types";
-import type { Advert } from "../pages/adverts/types";
-import { getLatestAdverts } from "../pages/adverts/service";
+import type { Advert, PreAdvert } from "../pages/adverts/types";
+import {
+  getLatestAdverts,
+  createAdvert,
+  getAdvert,
+} from "../pages/adverts/service";
 
 type AuthLoginPending = {
   type: "auth/login/pending";
@@ -26,8 +30,8 @@ type AdvertsLoadedFulfilled = {
   payload: Advert[];
 };
 
-type AdvertsCreated = {
-  type: "adverts/created";
+type AdvertsCreatedFulfilled = {
+  type: "adverts/created/fulfilled";
   payload: Advert;
 };
 
@@ -78,8 +82,10 @@ export const advertsLoadedFulfilled = (
   payload: adverts,
 });
 
-export const advertsCreated = (advert: Advert): AdvertsCreated => ({
-  type: "adverts/created",
+export const advertsCreatedFulfilled = (
+  advert: Advert,
+): AdvertsCreatedFulfilled => ({
+  type: "adverts/created/fulfilled",
   payload: advert,
 });
 
@@ -100,6 +106,22 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
   };
 }
 
+export function advertsCreate(preAdvert: PreAdvert): AppThunk<Promise<Advert>> {
+  return async function (dispatch) {
+    try {
+      // Manage advertsCreatePending
+      const createdAdvert = await createAdvert(preAdvert);
+      const advert = await getAdvert(createdAdvert.id.toString());
+      dispatch(advertsCreatedFulfilled(advert));
+      return advert;
+    } catch (error) {
+      // Manage advertsCreateRejected
+      console.log(error);
+      throw error;
+    }
+  };
+}
+
 export const uiResetError = (): UiResetError => ({
   type: "ui/reset-error",
 });
@@ -110,5 +132,5 @@ export type Actions =
   | AuthLoginRejected
   | AuthLogout
   | AdvertsLoadedFulfilled
-  | AdvertsCreated
+  | AdvertsCreatedFulfilled
   | UiResetError;

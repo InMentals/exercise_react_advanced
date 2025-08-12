@@ -2,7 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Page from "../../components/layout/page";
 import Button from "../../components/ui/button";
 import FormField from "../../components/ui/form-field";
-import { createAdvert, getTags } from "./service";
+import { getTags } from "./service";
 import { useNavigate } from "react-router";
 import { AxiosError } from "axios";
 import type { PreAdvert } from "./types";
@@ -10,7 +10,7 @@ import RadioSelection from "../../components/ui/radio-selection";
 import CheckBoxSelection from "../../components/ui/checkbox-selection";
 import "./new-advert-page.css";
 import { useAppDispatch } from "../../store";
-import { advertsCreated } from "../../store/actions";
+import { advertsCreate } from "../../store/actions";
 
 function NewAdvertPage() {
   const [advertInfo, setAdvertInfo] = useState({
@@ -72,8 +72,7 @@ function NewAdvertPage() {
     };
 
     try {
-      const createdAdvert = await createAdvert(preAdvert);
-      dispatch(advertsCreated(createdAdvert));
+      const createdAdvert = await dispatch(advertsCreate(preAdvert));
       navigate(`/adverts/${createdAdvert.id}`);
     } catch (error) {
       console.log(error);
