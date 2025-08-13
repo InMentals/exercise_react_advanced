@@ -1,13 +1,7 @@
 import type { AppThunk } from ".";
-import { login } from "../pages/auth/service";
 import { getAdvert } from "./selectors";
 import type { Credentials } from "../pages/auth/types";
 import type { Advert, PreAdvert } from "../pages/adverts/types";
-import {
-  getLatestAdverts,
-  createAdvert,
-  getAdvert as getAdvertService,
-} from "../pages/adverts/service";
 
 type AuthLoginPending = {
   type: "auth/login/pending";
@@ -62,10 +56,10 @@ export function authLogin(
   credentials: Credentials,
   rememberMe: boolean,
 ): AppThunk<Promise<void>> {
-  return async function (dispatch) {
+  return async function (dispatch, _getState, { api }) {
     dispatch(authLoginPending());
     try {
-      await login(credentials, rememberMe);
+      await api.auth.login(credentials, rememberMe);
       dispatch(authLoginFulfilled());
     } catch (error) {
       if (error instanceof Error) {
@@ -103,7 +97,7 @@ export const advertsCreatedFulfilled = (
 });
 
 export function advertsLoaded(): AppThunk<Promise<void>> {
-  return async function (dispatch, getState) {
+  return async function (dispatch, getState, { api }) {
     //TODO: manage reload after delete
     const state = getState();
     if (state.adverts.loaded) {
@@ -111,7 +105,7 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
     }
     try {
       //TODO: Manage advertsLoadedPending
-      const adverts = await getLatestAdverts();
+      const adverts = await api.adverts.getLatestAdverts();
       dispatch(advertsLoadedFulfilled(adverts));
     } catch (error) {
       console.log(error);
@@ -121,14 +115,14 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
 }
 
 export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
-  return async function (dispatch, getState) {
+  return async function (dispatch, getState, { api }) {
     const state = getState();
     if (getAdvert(advertId)(state)) {
       return;
     }
     try {
       // Manage advertsLoadedPending
-      const advert = await getAdvertService(advertId);
+      const advert = await api.adverts.getAdvert(advertId);
       dispatch(advertsDetailFulFilled(advert));
     } catch (error) {
       console.log(error);
@@ -138,11 +132,11 @@ export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
 }
 
 export function advertsCreate(preAdvert: PreAdvert): AppThunk<Promise<Advert>> {
-  return async function (dispatch) {
+  return async function (dispatch, _getState, { api }) {
     try {
       // Manage advertsCreatePending
-      const createdAdvert = await createAdvert(preAdvert);
-      const advert = await getAdvertService(createdAdvert.id.toString());
+      const createdAdvert = await api.adverts.createAdvert(preAdvert);
+      const advert = await api.adverts.getAdvert(createdAdvert.id.toString());
       dispatch(advertsCreatedFulfilled(advert));
       return advert;
     } catch (error) {

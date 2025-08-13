@@ -4,8 +4,12 @@ import { composeWithDevTools } from "@redux-devtools/extension";
 import { useDispatch, useSelector } from "react-redux";
 import * as thunk from "redux-thunk";
 import type { Actions } from "./actions";
+import * as adverts from "../pages/adverts/service";
+import * as auth from "../pages/auth/service";
 
 const rootReducer = combineReducers(reducers);
+
+type ExtraArgument = { api: { auth: typeof auth; adverts: typeof adverts } };
 
 export default function configureStore(
   preloadedState: Partial<reducers.State>,
@@ -14,7 +18,11 @@ export default function configureStore(
     rootReducer,
     preloadedState as never,
     composeWithDevTools(
-      applyMiddleware(thunk.withExtraArgument<reducers.State, Actions>()),
+      applyMiddleware(
+        thunk.withExtraArgument<reducers.State, Actions, ExtraArgument>({
+          api: { adverts, auth },
+        }),
+      ),
     ),
   );
   return store;
@@ -30,6 +38,6 @@ export const useAppSelector = useSelector.withTypes<RootState>();
 export type AppThunk<ReturnType = void> = thunk.ThunkAction<
   ReturnType,
   RootState,
-  undefined,
+  ExtraArgument,
   Actions
 >;
