@@ -106,7 +106,7 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
   return async function (dispatch, getState) {
     //TODO: manage reload after delete
     const state = getState();
-    if (state.adverts) {
+    if (state.adverts.loaded) {
       return;
     }
     try {
