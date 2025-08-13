@@ -6,14 +6,31 @@ import Button from "../../components/ui/button";
 import Dialog from "../../components/ui/dialog";
 import AdvertItem from "./advert-item";
 import "./advert-page.css";
-import { useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { getAdvert } from "../../store/selectors";
+import { advertsDetail } from "../../store/actions";
+import { useEffect } from "react";
+import { AxiosError } from "axios";
 
 function AdvertPage() {
   const params = useParams();
   const [displayDialog, setDisplayDialog] = useState<string>("none");
   const navigate = useNavigate();
   const advert = useAppSelector(getAdvert(params.advertId));
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!params.advertId) {
+      return;
+    }
+    dispatch(advertsDetail(params.advertId)).catch((error) => {
+      if (error instanceof AxiosError) {
+        if (error.status === 404) {
+          navigate("/not-found", { replace: true });
+        }
+      }
+    });
+  }, [navigate, params.advertId, dispatch]);
 
   function showDialog() {
     setDisplayDialog("flex");
@@ -49,5 +66,3 @@ function AdvertPage() {
 }
 
 export default AdvertPage;
-
-//TODO: review refresh page in advert-page: there is no advert anymore

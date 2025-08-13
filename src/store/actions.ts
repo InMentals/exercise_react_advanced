@@ -1,11 +1,12 @@
 import type { AppThunk } from ".";
 import { login } from "../pages/auth/service";
+import { getAdvert } from "./selectors";
 import type { Credentials } from "../pages/auth/types";
 import type { Advert, PreAdvert } from "../pages/adverts/types";
 import {
   getLatestAdverts,
   createAdvert,
-  getAdvert,
+  getAdvert as getAdvertService,
 } from "../pages/adverts/service";
 
 type AuthLoginPending = {
@@ -28,6 +29,11 @@ type AuthLogout = {
 type AdvertsLoadedFulfilled = {
   type: "adverts/loaded/fulfilled";
   payload: Advert[];
+};
+
+type AdvertsDetailFulFilled = {
+  type: "adverts/detail/fulfilled";
+  payload: Advert;
 };
 
 type AdvertsCreatedFulfilled = {
@@ -82,6 +88,13 @@ export const advertsLoadedFulfilled = (
   payload: adverts,
 });
 
+export const advertsDetailFulFilled = (
+  advert: Advert,
+): AdvertsDetailFulFilled => ({
+  type: "adverts/detail/fulfilled",
+  payload: advert,
+});
+
 export const advertsCreatedFulfilled = (
   advert: Advert,
 ): AdvertsCreatedFulfilled => ({
@@ -91,6 +104,7 @@ export const advertsCreatedFulfilled = (
 
 export function advertsLoaded(): AppThunk<Promise<void>> {
   return async function (dispatch, getState) {
+    //TODO: manage reload after delete
     const state = getState();
     if (state.adverts) {
       return;
@@ -106,12 +120,29 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
   };
 }
 
+export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
+  return async function (dispatch, getState) {
+    const state = getState();
+    if (getAdvert(advertId)(state)) {
+      return;
+    }
+    try {
+      // Manage advertsLoadedPending
+      const advert = await getAdvertService(advertId);
+      dispatch(advertsDetailFulFilled(advert));
+    } catch (error) {
+      console.log(error);
+      // Manage advertsLoadedRejected
+    }
+  };
+}
+
 export function advertsCreate(preAdvert: PreAdvert): AppThunk<Promise<Advert>> {
   return async function (dispatch) {
     try {
       // Manage advertsCreatePending
       const createdAdvert = await createAdvert(preAdvert);
-      const advert = await getAdvert(createdAdvert.id.toString());
+      const advert = await getAdvertService(createdAdvert.id.toString());
       dispatch(advertsCreatedFulfilled(advert));
       return advert;
     } catch (error) {
@@ -132,5 +163,6 @@ export type Actions =
   | AuthLoginRejected
   | AuthLogout
   | AdvertsLoadedFulfilled
+  | AdvertsDetailFulFilled
   | AdvertsCreatedFulfilled
   | UiResetError;
