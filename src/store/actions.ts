@@ -75,9 +75,12 @@ export function authLogin(
   };
 }
 
-export const authLogout = (): AuthLogout => ({
-  type: "auth/logout",
-});
+export function authLogout(): AppThunk<Promise<void>> {
+  return async function (dispatch, _getState, { api }) {
+    await api.auth.logout();
+    dispatch({ type: "auth/logout" });
+  };
+}
 
 export const advertsLoadedFulfilled = (
   adverts: Advert[],
