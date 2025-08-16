@@ -72,8 +72,7 @@ function NewAdvertPage() {
     };
 
     try {
-      const createdAdvert = await dispatch(advertsCreate(preAdvert));
-      navigate(`/adverts/${createdAdvert.id}`);
+      await dispatch(advertsCreate(preAdvert));
     } catch (error) {
       console.log(error);
       if (error instanceof AxiosError) {

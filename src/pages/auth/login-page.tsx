@@ -4,13 +4,10 @@ import { useLoginAction, useUiResetError } from "../../store/hooks";
 import { useAppSelector } from "../../store";
 import { getUi } from "../../store/selectors";
 import FormField from "../../components/ui/form-field";
-import { useNavigate, useLocation } from "react-router";
 import "./login-page.css";
 import Page from "../../components/layout/page";
 
 function LoginPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
   const loginAction = useLoginAction();
   const uiResetErrorAction = useUiResetError();
   const { pending: isFetching, error } = useAppSelector(getUi);
@@ -38,8 +35,6 @@ function LoginPage() {
 
     try {
       await loginAction(credentials, rememberMe);
-      const to = location.state?.from ?? "/";
-      navigate(to, { replace: true });
     } catch (error) {
       console.log(error);
     }

@@ -43,6 +43,7 @@ function AdvertPage() {
     event.preventDefault();
     await deleteAdvert(params.advertId!);
     navigate("/", { replace: true });
+    //TODO: manage reload after delete (reload all adverts)
   }
 
   return (
