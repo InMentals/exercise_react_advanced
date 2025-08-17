@@ -17,6 +17,23 @@ type ExtraArgument = {
   router: Router;
 };
 
+// @ts-expect-error: any
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const failureRedirects = (router: Router) => (store) => (next) => (action) => {
+  const result = next(action);
+  if (!action.type.endsWith("/rejected")) {
+    return result;
+  }
+
+  if (action.payload.status === 404) {
+    router.navigate("/404");
+  }
+
+  if (action.payload.status === 401) {
+    router.navigate("/login");
+  }
+};
+
 export default function configureStore(
   preloadedState: Partial<reducers.State>,
   router: Router,
@@ -30,6 +47,7 @@ export default function configureStore(
           api: { adverts, auth },
           router,
         }),
+        failureRedirects(router),
       ),
     ),
   );

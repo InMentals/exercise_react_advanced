@@ -30,9 +30,19 @@ type AdvertsDetailFulFilled = {
   payload: Advert;
 };
 
+type AdvertsDetailRejected = {
+  type: "adverts/detail/rejected";
+  payload: Error;
+};
+
 type AdvertsCreatedFulfilled = {
   type: "adverts/created/fulfilled";
   payload: Advert;
+};
+
+type AdvertsCreatedRejected = {
+  type: "adverts/created/rejected";
+  payload: Error;
 };
 
 type UiResetError = {
@@ -96,11 +106,23 @@ export const advertsDetailFulFilled = (
   payload: advert,
 });
 
+export const advertsDetailRejected = (error: Error): AdvertsDetailRejected => ({
+  type: "adverts/detail/rejected",
+  payload: error,
+});
+
 export const advertsCreatedFulfilled = (
   advert: Advert,
 ): AdvertsCreatedFulfilled => ({
   type: "adverts/created/fulfilled",
   payload: advert,
+});
+
+export const advertsCreatedRejected = (
+  error: Error,
+): AdvertsCreatedRejected => ({
+  type: "adverts/created/rejected",
+  payload: error,
 });
 
 export function advertsLoaded(): AppThunk<Promise<void>> {
@@ -132,7 +154,10 @@ export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
       const advert = await api.adverts.getAdvert(advertId);
       dispatch(advertsDetailFulFilled(advert));
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) {
+        dispatch(advertsDetailRejected(error));
+      }
+      throw error;
       // Manage advertsLoadedRejected
     }
   };
@@ -149,7 +174,10 @@ export function advertsCreate(preAdvert: PreAdvert): AppThunk<Promise<Advert>> {
       return advert;
     } catch (error) {
       // Manage advertsCreateRejected
-      console.log(error);
+      if (error instanceof Error) {
+        console.log(error);
+        dispatch(advertsCreatedRejected(error));
+      }
       throw error;
     }
   };
@@ -166,5 +194,12 @@ export type Actions =
   | AuthLogout
   | AdvertsLoadedFulfilled
   | AdvertsDetailFulFilled
+  | AdvertsDetailRejected
   | AdvertsCreatedFulfilled
+  | AdvertsCreatedRejected
   | UiResetError;
+
+export type ActionsRejected =
+  | AuthLoginRejected
+  | AdvertsCreatedRejected
+  | AdvertsDetailRejected;

@@ -33,11 +33,7 @@ function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    try {
-      await loginAction(credentials, rememberMe);
-    } catch (error) {
-      console.log(error);
-    }
+    await loginAction(credentials, rememberMe);
   }
 
   return (

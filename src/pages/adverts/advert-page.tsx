@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { getAdvert } from "../../store/selectors";
 import { advertsDetail } from "../../store/actions";
 import { useEffect } from "react";
-import { AxiosError } from "axios";
 
 function AdvertPage() {
   const params = useParams();
@@ -23,14 +22,8 @@ function AdvertPage() {
     if (!params.advertId) {
       return;
     }
-    dispatch(advertsDetail(params.advertId)).catch((error) => {
-      if (error instanceof AxiosError) {
-        if (error.status === 404) {
-          navigate("/not-found", { replace: true });
-        }
-      }
-    });
-  }, [navigate, params.advertId, dispatch]);
+    dispatch(advertsDetail(params.advertId));
+  }, [params.advertId, dispatch]);
 
   function showDialog() {
     setDisplayDialog("flex");
@@ -44,6 +37,7 @@ function AdvertPage() {
     await deleteAdvert(params.advertId!);
     navigate("/", { replace: true });
     //TODO: manage reload after delete (reload all adverts)
+    //TODO: manage delete error
   }
 
   return (

@@ -1,5 +1,5 @@
 import type { Advert } from "../pages/adverts/types";
-import type { Actions } from "./actions";
+import { type Actions, type ActionsRejected } from "./actions";
 
 export type State = {
   auth: boolean;
@@ -55,14 +55,19 @@ export function adverts(
   }
 }
 
+function isRejectedAction(action: Actions): action is ActionsRejected {
+  return action.type.endsWith("/rejected");
+}
+
 export function ui(state = defaultState.ui, action: Actions): State["ui"] {
+  if (isRejectedAction(action)) {
+    return { pending: false, error: action.payload };
+  }
   switch (action.type) {
     case "auth/login/pending":
       return { pending: true, error: null };
     case "auth/login/fulfilled":
       return { pending: false, error: null };
-    case "auth/login/rejected":
-      return { pending: false, error: action.payload };
     case "ui/reset-error":
       return { ...state, error: null };
     default:
