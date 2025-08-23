@@ -26,7 +26,7 @@ describe("adverts reducer", () => {
     tags: ["motor", "lifestyle"],
     userId: "1",
     createdAt: "2024-01-01T00:00:00.000Z",
-    id: " 1",
+    id: "1",
     photo: "string",
   };
   test('should manage "adverts/created/fulfilled" action', () => {
