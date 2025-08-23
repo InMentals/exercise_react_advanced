@@ -49,7 +49,7 @@ export function adverts(
     case "adverts/detail/fulfilled":
       return { loaded: false, data: [action.payload] };
     case "adverts/created/fulfilled":
-      return { ...state, data: [action.payload, ...(state.data ?? [])] };
+      return { ...state, data: [action.payload, ...state.data] };
     default:
       return state;
   }
