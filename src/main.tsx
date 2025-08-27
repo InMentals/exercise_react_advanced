@@ -4,7 +4,7 @@ import App from "./App.tsx";
 import storage from "./utils/storage.ts";
 import { setAuthorizationHeader } from "./api/client.ts";
 import { Provider } from "react-redux";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import configureStore from "./store";
 
 const accessToken = storage.get("auth");

@@ -1,7 +1,7 @@
 import "./header.css";
 import logo from "../../assets/logo-wallareact.svg";
 import AuthButton from "../../pages/auth/auth-button";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import LinkButton from "../ui/link-button";
 
 interface HeaderProps {

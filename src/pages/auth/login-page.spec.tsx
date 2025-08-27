@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import LoginPage from "./login-page";
 import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
 
 describe("LoginPage", () => {
   const state = {
@@ -23,7 +24,9 @@ describe("LoginPage", () => {
           dispatch: () => {},
         }}
       >
-        <LoginPage />,
+        <MemoryRouter>
+          <LoginPage />
+        </MemoryRouter>
       </Provider>,
     );
 
