@@ -8,7 +8,7 @@ import AdvertItem from "./advert-item";
 import "./advert-page.css";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { getAdvert } from "../../store/selectors";
-import { advertsDetail } from "../../store/actions";
+import { advertsDeleteFulfilled, advertsDetail } from "../../store/actions";
 import { useEffect } from "react";
 
 function AdvertPage() {
@@ -35,8 +35,8 @@ function AdvertPage() {
   async function handleDelete(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await deleteAdvert(params.advertId!);
+    dispatch(advertsDeleteFulfilled());
     navigate("/", { replace: true });
-    //TODO: manage reload after delete (reload all adverts)
     //TODO: manage delete error
   }
 

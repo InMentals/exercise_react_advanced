@@ -48,6 +48,8 @@ export function adverts(
       return { loaded: true, data: action.payload };
     case "adverts/detail/fulfilled":
       return { loaded: false, data: [action.payload] };
+    case "adverts/delete/fulfilled":
+      return { ...state, loaded: false };
     case "adverts/created/fulfilled":
       return { ...state, data: [action.payload, ...state.data] };
     default:

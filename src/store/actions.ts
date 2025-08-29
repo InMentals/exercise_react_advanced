@@ -25,7 +25,7 @@ type AdvertsLoadedFulfilled = {
   payload: Advert[];
 };
 
-type AdvertsDetailFulFilled = {
+type AdvertsDetailFulfilled = {
   type: "adverts/detail/fulfilled";
   payload: Advert;
 };
@@ -33,6 +33,10 @@ type AdvertsDetailFulFilled = {
 type AdvertsDetailRejected = {
   type: "adverts/detail/rejected";
   payload: Error;
+};
+
+type AdvertsDeleteFulfilled = {
+  type: "adverts/delete/fulfilled";
 };
 
 type AdvertsCreatedFulfilled = {
@@ -99,9 +103,9 @@ export const advertsLoadedFulfilled = (
   payload: adverts,
 });
 
-export const advertsDetailFulFilled = (
+export const advertsDetailFulfilled = (
   advert: Advert,
-): AdvertsDetailFulFilled => ({
+): AdvertsDetailFulfilled => ({
   type: "adverts/detail/fulfilled",
   payload: advert,
 });
@@ -109,6 +113,10 @@ export const advertsDetailFulFilled = (
 export const advertsDetailRejected = (error: Error): AdvertsDetailRejected => ({
   type: "adverts/detail/rejected",
   payload: error,
+});
+
+export const advertsDeleteFulfilled = (): AdvertsDeleteFulfilled => ({
+  type: "adverts/delete/fulfilled",
 });
 
 export const advertsCreatedFulfilled = (
@@ -127,7 +135,6 @@ export const advertsCreatedRejected = (
 
 export function advertsLoaded(): AppThunk<Promise<void>> {
   return async function (dispatch, getState, { api }) {
-    //TODO: manage reload after delete
     const state = getState();
     if (state.adverts.loaded) {
       return;
@@ -152,7 +159,7 @@ export function advertsDetail(advertId: string): AppThunk<Promise<void>> {
     try {
       // Manage advertsLoadedPending
       const advert = await api.adverts.getAdvert(advertId);
-      dispatch(advertsDetailFulFilled(advert));
+      dispatch(advertsDetailFulfilled(advert));
     } catch (error) {
       if (error instanceof Error) {
         dispatch(advertsDetailRejected(error));
@@ -193,8 +200,9 @@ export type Actions =
   | AuthLoginRejected
   | AuthLogout
   | AdvertsLoadedFulfilled
-  | AdvertsDetailFulFilled
+  | AdvertsDetailFulfilled
   | AdvertsDetailRejected
+  | AdvertsDeleteFulfilled
   | AdvertsCreatedFulfilled
   | AdvertsCreatedRejected
   | UiResetError;
