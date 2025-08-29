@@ -3,12 +3,13 @@ import userEvent from "@testing-library/user-event";
 import LoginPage from "./login-page";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { authLogin } from "../../store/actions";
+import { authLogin, uiResetError } from "../../store/actions";
+import type { RootState } from "../../store";
 
 vi.mock("../../store/actions");
 
 describe("LoginPage", () => {
-  const state = {
+  const state: RootState = {
     auth: false,
     adverts: { loaded: false, data: [] },
     ui: {
@@ -17,8 +18,11 @@ describe("LoginPage", () => {
     },
   };
 
-  const renderComponent = () =>
-    render(
+  const renderComponent = (error?: Error) => {
+    if (error) {
+      state.ui.error = error;
+    }
+    return render(
       <Provider
         store={{
           getState: () => state,
@@ -33,6 +37,7 @@ describe("LoginPage", () => {
         </MemoryRouter>
       </Provider>,
     );
+  };
 
   test("should render", () => {
     const { container } = renderComponent();
@@ -55,6 +60,9 @@ describe("LoginPage", () => {
 
     await userEvent.type(emailInput, "user@example.com");
     await userEvent.type(passwordInput, "1234");
+    await userEvent.click(rememberMeCheckbox);
+
+    expect(rememberMeCheckbox).not.toBeChecked();
 
     expect(button).toBeEnabled();
 
@@ -65,7 +73,21 @@ describe("LoginPage", () => {
         email: "user@example.com",
         password: "1234",
       },
-      true,
+      false,
     );
+  });
+
+  test("should render error", async () => {
+    const error = new Error("Wrong username/password");
+    const { container } = renderComponent(error);
+
+    expect(container).toMatchSnapshot();
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent(error.message);
+
+    await userEvent.click(alert);
+
+    expect(uiResetError).toHaveBeenCalled();
   });
 });

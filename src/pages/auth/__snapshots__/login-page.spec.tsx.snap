@@ -82,3 +82,92 @@ exports[`LoginPage > should render 1`] = `
   </main>
 </div>
 `;
+
+exports[`LoginPage > should render error 1`] = `
+<div>
+  <header
+    class="header"
+  >
+    <a
+      class="logo"
+      data-discover="true"
+      href="/"
+    >
+      <img
+        alt=""
+        class="logoImg"
+        src="/src/assets/logo-wallareact.svg"
+      />
+      <h1>
+        WallaReact
+      </h1>
+    </a>
+  </header>
+  <main
+    class="main"
+  >
+    <div
+      class="login-form-container"
+    >
+      <form
+        class="login-form"
+      >
+        <div>
+          <label>
+            Email
+            <input
+              class="loginFormField"
+              name="email"
+              placeholder="enter your email"
+              type="email"
+              value=""
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Password
+            <input
+              class="loginFormField"
+              name="password"
+              placeholder="enter your password"
+              type="password"
+              value=""
+            />
+          </label>
+        </div>
+        <div>
+          <input
+            checked=""
+            id="rememberMe"
+            name="rememberMe"
+            type="checkbox"
+          />
+          <label
+            for="rememberMe"
+          >
+            Remember me
+          </label>
+        </div>
+        <div
+          class="submit-container"
+        >
+          <button
+            class="sc-bXdtCk knWQaJ"
+            disabled=""
+            type="submit"
+          >
+            Log in
+          </button>
+        </div>
+        <div
+          class="login-error"
+          role="alert"
+        >
+          Wrong username/password
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+`;
