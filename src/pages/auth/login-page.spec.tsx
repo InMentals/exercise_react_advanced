@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import LoginPage from "./login-page";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -38,7 +39,7 @@ describe("LoginPage", () => {
     expect(container).toMatchSnapshot();
   });
 
-  test("should dispatch login action", () => {
+  test("should dispatch login action", async () => {
     renderComponent();
 
     const emailInput = screen.getByLabelText(/Email/);
@@ -52,8 +53,8 @@ describe("LoginPage", () => {
     expect(button).toHaveTextContent("Log in");
     expect(button).toBeDisabled();
 
-    fireEvent.change(emailInput, { target: { value: "user@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "1234" } });
+    await userEvent.type(emailInput, "user@example.com");
+    await userEvent.type(passwordInput, "1234");
 
     expect(button).toBeEnabled();
 
