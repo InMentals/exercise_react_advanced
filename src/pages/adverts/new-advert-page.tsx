@@ -1,14 +1,14 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Page from "../../components/layout/page";
 import Button from "../../components/ui/button";
 import FormField from "../../components/ui/form-field";
-import { getTags } from "./service";
 import type { PreAdvert } from "./types";
 import RadioSelection from "../../components/ui/radio-selection";
 import CheckBoxSelection from "../../components/ui/checkbox-selection";
 import "./new-advert-page.css";
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { advertsCreate } from "../../store/actions";
+import { getTags } from "../../store/selectors";
 
 function NewAdvertPage() {
   const [advertInfo, setAdvertInfo] = useState({
@@ -18,16 +18,8 @@ function NewAdvertPage() {
     photo: [],
   });
   const [tags, setTags] = useState<string[]>([]);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const availableTags = useAppSelector(getTags);
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    async function loadTags() {
-      const getAvailableTags = await getTags();
-      setAvailableTags(getAvailableTags);
-    }
-    loadTags();
-  }, []);
 
   const { name, price } = advertInfo;
   const isDisabled = !name || !price || tags.length === 0 || submitted;

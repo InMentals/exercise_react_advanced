@@ -25,6 +25,11 @@ type AdvertsLoadedFulfilled = {
   payload: Advert[];
 };
 
+type TagsLoadedFulfilled = {
+  type: "tags/loaded/fulfilled";
+  payload: string[];
+};
+
 type AdvertsDetailFulfilled = {
   type: "adverts/detail/fulfilled";
   payload: Advert;
@@ -103,6 +108,11 @@ export const advertsLoadedFulfilled = (
   payload: adverts,
 });
 
+export const tagsLoadedFulfilled = (tags: string[]): TagsLoadedFulfilled => ({
+  type: "tags/loaded/fulfilled",
+  payload: tags,
+});
+
 export const advertsDetailFulfilled = (
   advert: Advert,
 ): AdvertsDetailFulfilled => ({
@@ -146,6 +156,23 @@ export function advertsLoaded(): AppThunk<Promise<void>> {
     } catch (error) {
       console.log(error);
       //TODO: Manage advertsLoadedRejected
+    }
+  };
+}
+
+export function tagsLoaded(): AppThunk<Promise<void>> {
+  return async function (dispatch, getState, { api }) {
+    const state = getState();
+    if (state.tags.loaded) {
+      return;
+    }
+    try {
+      //TODO: Manage tagsLoadedPending
+      const tags = await api.adverts.getTags();
+      dispatch(tagsLoadedFulfilled(tags));
+    } catch (error) {
+      console.log(error);
+      //TODO: Manage tagsLoadedRejected
     }
   };
 }
@@ -200,6 +227,7 @@ export type Actions =
   | AuthLoginRejected
   | AuthLogout
   | AdvertsLoadedFulfilled
+  | TagsLoadedFulfilled
   | AdvertsDetailFulfilled
   | AdvertsDetailRejected
   | AdvertsDeleteFulfilled

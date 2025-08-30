@@ -6,6 +6,7 @@ import * as thunk from "redux-thunk";
 import type { Actions } from "./actions";
 import * as adverts from "../pages/adverts/service";
 import * as auth from "../pages/auth/service";
+import * as tags from "../pages/adverts/service";
 import type { createBrowserRouter } from "react-router";
 
 const rootReducer = combineReducers(reducers);
@@ -13,7 +14,7 @@ const rootReducer = combineReducers(reducers);
 type Router = ReturnType<typeof createBrowserRouter>;
 
 type ExtraArgument = {
-  api: { auth: typeof auth; adverts: typeof adverts };
+  api: { auth: typeof auth; adverts: typeof adverts; tags: typeof tags };
   router: Router;
 };
 
@@ -44,7 +45,7 @@ export default function configureStore(
     composeWithDevTools(
       applyMiddleware(
         thunk.withExtraArgument<reducers.State, Actions, ExtraArgument>({
-          api: { adverts, auth },
+          api: { adverts, auth, tags },
           router,
         }),
         failureRedirects(router),

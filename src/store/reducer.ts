@@ -7,6 +7,10 @@ export type State = {
     loaded: boolean;
     data: Advert[];
   };
+  tags: {
+    loaded: boolean;
+    data: string[];
+  };
   ui: {
     pending: boolean;
     error: Error | null;
@@ -16,6 +20,10 @@ export type State = {
 const defaultState: State = {
   auth: false,
   adverts: {
+    loaded: false,
+    data: [],
+  },
+  tags: {
     loaded: false,
     data: [],
   },
@@ -52,6 +60,18 @@ export function adverts(
       return { ...state, loaded: false };
     case "adverts/created/fulfilled":
       return { ...state, data: [action.payload, ...state.data] };
+    default:
+      return state;
+  }
+}
+
+export function tags(
+  state = defaultState.tags,
+  action: Actions,
+): State["tags"] {
+  switch (action.type) {
+    case "tags/loaded/fulfilled":
+      return { loaded: true, data: action.payload };
     default:
       return state;
   }

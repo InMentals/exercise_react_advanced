@@ -7,7 +7,7 @@ import Page from "../../components/layout/page";
 import "./adverts-page.css";
 import LinkButton from "../../components/ui/link-button";
 import { getAdverts } from "../../store/selectors";
-import { advertsLoaded } from "../../store/actions";
+import { advertsLoaded, tagsLoaded } from "../../store/actions";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 function AdvertsPage() {
@@ -20,6 +20,7 @@ function AdvertsPage() {
 
   useEffect(() => {
     dispatch(advertsLoaded());
+    dispatch(tagsLoaded());
   }, [dispatch]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
