@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Advert } from "./types";
 import AdvertItem from "./advert-item";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import FilterForm from "./filter-form";
 import Page from "../../components/layout/page";
 import "./adverts-page.css";

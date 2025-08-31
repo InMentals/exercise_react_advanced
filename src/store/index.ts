@@ -7,7 +7,7 @@ import type { Actions } from "./actions";
 import * as adverts from "../pages/adverts/service";
 import * as auth from "../pages/auth/service";
 import * as tags from "../pages/adverts/service";
-import type { createBrowserRouter } from "react-router";
+import type { createBrowserRouter } from "react-router-dom";
 
 const rootReducer = combineReducers(reducers);
 

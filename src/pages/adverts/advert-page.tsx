@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import Page from "../../components/layout/page";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
 import { deleteAdvert } from "./service";
 import Button from "../../components/ui/button";
 import Dialog from "../../components/ui/dialog";
