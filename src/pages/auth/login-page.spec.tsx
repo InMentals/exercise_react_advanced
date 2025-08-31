@@ -12,6 +12,10 @@ describe("LoginPage", () => {
   const state: RootState = {
     auth: false,
     adverts: { loaded: false, data: [] },
+    tags: {
+      loaded: false,
+      data: [],
+    },
     ui: {
       pending: false,
       error: null,
