@@ -11,14 +11,14 @@ const advertsData = [
     id: "idAdvert1",
     createdAt: "2025-07-28T13:40:06.000Z",
     name: "testAdvert1",
-    sale: false,
+    sale: true,
     price: 5,
     tags: ["tag1"],
     userId: "user1",
     photo: "",
   },
   {
-    id: "dAdvert1",
+    id: "dAdvert2",
     createdAt: "2025-07-28T13:43:06.000Z",
     name: "testAdvert2",
     sale: false,
@@ -27,9 +27,20 @@ const advertsData = [
     userId: "user1",
     photo: "",
   },
+
+  {
+    id: "dAdvert3",
+    createdAt: "2025-07-28T13:46:06.000Z",
+    name: "testAdvert3",
+    sale: false,
+    price: 1500,
+    tags: ["tag1", "tag3"],
+    userId: "user1",
+    photo: "",
+  },
 ];
 
-const tagsData = ["lifestyle", "mobile", "motor", "work"];
+const tagsData = ["tag1", "tag2", "tag3", "tag4"];
 
 describe("AdvertsPage with adverts", () => {
   const state: RootState = {
@@ -67,31 +78,32 @@ describe("AdvertsPage with adverts", () => {
     const { container } = renderComponent();
     const lists = screen.getAllByRole("list");
     const advertsContainer = lists[0];
-    expect(advertsContainer).toBeInTheDocument();
+    expect(advertsContainer.children).toHaveLength(3);
     expect(container).toMatchSnapshot();
   });
 
-  //   test("should render without adverts", () => {
-  //     const { container } = renderComponent();
-  //     const noAdvertsText = screen.getByText("There are no adverts published");
-  //     expect(noAdvertsText).toBeInTheDocument();
-  //     expect(container).toMatchSnapshot();
-  //   });
-
   test("filter", async () => {
     renderComponent();
-    const sellCheckbox = screen.getByLabelText(/Sell/);
+    const sellRadio = screen.getByRole("radio", { name: /Sell/i });
+    const buyRadio = screen.getByRole("radio", { name: /Buy/i });
+    const advertNameInput = screen.getByLabelText(/name/);
     const applyFilter = screen.getByRole("button", { name: "Apply filter" });
     const clearFilter = screen.getByRole("button", { name: "Clear filter" });
     const lists = screen.getAllByRole("list");
     const advertsContainer = lists[0];
 
     expect(applyFilter).toHaveTextContent("Apply filter");
-    await userEvent.click(sellCheckbox);
+    await userEvent.click(sellRadio);
+    await userEvent.click(applyFilter);
+    expect(advertsContainer.children).toHaveLength(1);
+    await userEvent.click(buyRadio);
+    await userEvent.click(applyFilter);
+    expect(advertsContainer.children).toHaveLength(2);
+    await userEvent.click(clearFilter);
+    expect(advertsContainer.children).toHaveLength(3);
+    await userEvent.type(advertNameInput, "advert0");
     await userEvent.click(applyFilter);
     expect(advertsContainer).toBeEmptyDOMElement();
-    await userEvent.click(clearFilter);
-    expect(advertsContainer).not.toBeEmptyDOMElement();
   });
 });
 
