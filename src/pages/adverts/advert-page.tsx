@@ -1,34 +1,29 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Page from "../../components/layout/page";
-import { useParams, useNavigate } from "react-router";
-import type { Advert } from "./types";
-import { deleteAdvert, getAdvert } from "./service";
-import { AxiosError } from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { deleteAdvert } from "./service";
 import Button from "../../components/ui/button";
 import Dialog from "../../components/ui/dialog";
 import AdvertItem from "./advert-item";
 import "./advert-page.css";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { getAdvert } from "../../store/selectors";
+import { advertsDeleteFulfilled, advertsDetail } from "../../store/actions";
+import { useEffect } from "react";
 
 function AdvertPage() {
   const params = useParams();
-  const [advert, setAdvert] = useState<Advert | null>(null);
   const [displayDialog, setDisplayDialog] = useState<string>("none");
   const navigate = useNavigate();
+  const advert = useAppSelector(getAdvert(params.advertId));
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!params.advertId) {
       return;
     }
-    getAdvert(params.advertId)
-      .then((advert) => setAdvert(advert))
-      .catch((error) => {
-        if (error instanceof AxiosError) {
-          if (error.status === 404) {
-            navigate("/not-found", { replace: true });
-          }
-        }
-      });
-  }, [navigate, params.advertId]);
+    dispatch(advertsDetail(params.advertId));
+  }, [params.advertId, dispatch]);
 
   function showDialog() {
     setDisplayDialog("flex");
@@ -40,7 +35,9 @@ function AdvertPage() {
   async function handleDelete(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await deleteAdvert(params.advertId!);
+    dispatch(advertsDeleteFulfilled());
     navigate("/", { replace: true });
+    //TODO: manage delete error
   }
 
   return (

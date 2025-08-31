@@ -1,14 +1,14 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Page from "../../components/layout/page";
 import Button from "../../components/ui/button";
 import FormField from "../../components/ui/form-field";
-import { createAdvert, getTags } from "./service";
-import { useNavigate } from "react-router";
-import { AxiosError } from "axios";
 import type { PreAdvert } from "./types";
 import RadioSelection from "../../components/ui/radio-selection";
 import CheckBoxSelection from "../../components/ui/checkbox-selection";
 import "./new-advert-page.css";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { advertsCreate } from "../../store/actions";
+import { getTags } from "../../store/selectors";
 
 function NewAdvertPage() {
   const [advertInfo, setAdvertInfo] = useState({
@@ -18,21 +18,13 @@ function NewAdvertPage() {
     photo: [],
   });
   const [tags, setTags] = useState<string[]>([]);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [submited, setSubmited] = useState(false);
-
-  useEffect(() => {
-    async function loadTags() {
-      const getAvailableTags = await getTags();
-      setAvailableTags(getAvailableTags);
-    }
-    loadTags();
-  }, []);
+  const availableTags = useAppSelector(getTags);
+  const [submitted, setSubmitted] = useState(false);
 
   const { name, price } = advertInfo;
-  const isDisabled = !name || !price || tags.length === 0 || submited;
+  const isDisabled = !name || !price || tags.length === 0 || submitted;
 
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.type === "file") {
@@ -59,7 +51,7 @@ function NewAdvertPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmited(true);
+    setSubmitted(true);
     const preAdvert: PreAdvert = {
       name: advertInfo.name,
       sale: (advertInfo.sale === "sell").toString(),
@@ -68,24 +60,14 @@ function NewAdvertPage() {
       photo: advertInfo.photo[0],
     };
 
-    try {
-      const createdAdvert = await createAdvert(preAdvert);
-      navigate(`/adverts/${createdAdvert.id}`);
-    } catch (error) {
-      console.log(error);
-      if (error instanceof AxiosError) {
-        if (error.status === 401) {
-          navigate("/login", { replace: true });
-        }
-      }
-    }
+    await dispatch(advertsCreate(preAdvert));
   }
 
   return (
     <Page page="new">
       <div className="new-advert-form-container">
         <form onSubmit={handleSubmit} className="new-advert-form">
-          <small>Fileds marqued with (*) are mandatory</small>
+          <small>Fields marked with (*) are mandatory</small>
           <FormField
             type="text"
             name="name"

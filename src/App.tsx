@@ -1,7 +1,7 @@
 import AdvertsPage from "./pages/adverts/adverts-page";
 import LoginPage from "./pages/auth/login-page";
 import NewAdvertPage from "./pages/adverts/new-advert-page";
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import RequireAuth from "./pages/auth/require-auth";
 import AdvertPage from "./pages/adverts/advert-page";
