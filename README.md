@@ -1,4 +1,4 @@
-# Exercise React fundamentals
+# Exercise React advanced
 
-This repository contains the exercise for the module **"Fundamentos de React"** from the KeepCoding bootcamp **"Desarrollo Web | Edición XVII"**.
-The exercise statement is provided in the file **Práctica Fundamentos.pdf**.
+This repository contains the exercise for the module **"React Avanzado"** from the KeepCoding bootcamp **"Desarrollo Web | Edición XVII"**.
+The exercise statement is provided in the file **Práctica Nodepop redux.pdf**.
